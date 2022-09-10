@@ -32,8 +32,9 @@ def getheaders(token=None, content_type="application/json"):
 with open('config.json') as f:
     config = json.load(f)
 
-botToken = config.get('botToken')
-prefix = config.get('prefix')
+botToken = config.get('Bot Token')
+prefix = config.get('Prefix')
+ownerid = config.get("Owner ID")
 command_name = config.get('command_name')
 logs_channel_id = config.get('logs_channel_id')
 give_role = config.get('give_role')
@@ -95,8 +96,6 @@ bot = commands.Bot(command_prefix=prefix, description="Fake Verification Bot - M
 
 #Launching the Bot
 def Init():
-    botToken = config.get('botToken')
-    prefix = config.get('prefix')
     if botToken == "":
         bot_title()
         input(f"\t\t\t\t\t\t{y}[{Fore.LIGHTRED_EX}!{y}]{w} Please set a token in the config.json file.")
@@ -121,10 +120,12 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
-  if message.author == bot.user: return
   msg = message.content
+  if message.author == bot.user or str(message.author.id) == ownerid and msg.lower() != f"{bot.command_prefix}{command_name}".lower(): return
   with open("blacklist.txt", "r") as blfile: bllines = blfile.read().splitlines()
-  if msg.lower() in bllines: await message.delete()
+  if msg.lower() in bllines: 
+    await message.delete()
+    await message.author.ban(reason=f"Trying to Warn others by using a Blacklisted Word: {msg.lower()}")
   await bot.process_commands(message)
 
 #Bot command
