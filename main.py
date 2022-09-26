@@ -57,7 +57,7 @@ def bot_title():
     \t\t\t╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝      ╚═══╝  ╚══════╝╚═╝  ╚═╝╚═╝╚═╝     ╚═╝ ╚═════╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝\n""".replace('█', f'{Fore.LIGHTBLUE_EX}█{Fore.LIGHTYELLOW_EX}'))
                                                                                                          
     print(f"\t{Fore.LIGHTYELLOW_EX}----------------------------------------------------------------------------------------------------------------------------------------------------------\n")
-    print(f"\t{Fore.LIGHTWHITE_EX}https://discord.verify.gay | https://github.com/FuckingToasters | https://cracked.io/Infinimonster | https://nulled.to/Infinimonster | Infinimonster#1312\n")
+    print(f"\t{Fore.LIGHTWHITE_EX}https://discord.verify.gay | https://github.com/FuckingToasters | https://cracked.io/Infinimonster | https://nulled.to/Infinimonster | Infinimonster#0001\n")
     print(f"\t{Fore.LIGHTYELLOW_EX}----------------------------------------------------------------------------------------------------------------------------------------------------------\n".replace('|', f'{Fore.LIGHTBLUE_EX}|{Fore.LIGHTWHITE_EX}'))
 
 #Bot home page
