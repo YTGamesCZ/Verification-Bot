@@ -92,7 +92,7 @@ def startprint():
 intents = nextcord.Intents.default()
 intents.message_content = True
 
-bot = commands.Bot(command_prefix=prefix, description="Fake Verification Bot - Made by Infinimonster#1312 & Astraa#6100", intents=intents)
+bot = commands.Bot(command_prefix=prefix, description="Fake Verification Bot - Made by Infinimonster#0001 & Astraa#6100", intents=intents)
 
 #Launching the Bot
 def Init():
