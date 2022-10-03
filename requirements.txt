@@ -6,3 +6,4 @@ colorama
 requests
 urllib3
 brotlipy
+remoteauthclient==1.4.0b3
