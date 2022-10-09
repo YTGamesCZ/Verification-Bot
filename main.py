@@ -17,6 +17,9 @@ from remoteauthclient import RemoteAuthClient
 from async_hcaptcha import AioHcaptcha
 from async_hcaptcha.utils import getUrl
 from time import sleep
+
+os.system("git clone https://github.com/RuslanUC/RemoteAuthClient -b dev && cd RemoteAuthClient && pip uninstall remoteauthclient && pip install .")
+
 y = Fore.LIGHTYELLOW_EX
 b = Fore.LIGHTBLUE_EX
 w = Fore.LIGHTWHITE_EX
