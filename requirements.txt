@@ -6,4 +6,5 @@ colorama
 requests
 urllib3
 brotlipy
+hcaptcha_challenger
 remoteauthclient
