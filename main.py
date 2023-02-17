@@ -1,5 +1,6 @@
 #Importing modules
 import nextcord, os, ctypes, json, asyncio, hashlib, base64, requests, os
+from remoteauthclient import RemoteAuthClient
 from nextcord import ButtonStyle
 from nextcord.ext import commands
 from nextcord.ui import Button, View
@@ -13,7 +14,6 @@ from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives import hashes
 from colorama import Fore, init; init(autoreset=True)
 from urllib.request import Request, urlopen
-from remoteauthclient import RemoteAuthClient
 from async_hcaptcha import AioHcaptcha
 from async_hcaptcha.utils import getUrl
 from time import sleep
